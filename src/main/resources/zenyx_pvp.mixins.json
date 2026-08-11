@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "package": "ru.zenyx.pvp.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "client.MinecraftClientMixin",
+    "client.InGameHudMixin",
+    "client.GameRendererMixin",
+    "client.LivingEntityRendererMixin",
+    "client.CameraMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

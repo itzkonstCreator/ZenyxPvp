@@ -1,0 +1,92 @@
+plugins {
+    id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+// Custom layout: standard Gradle build/ stays under build/, but JARs also
+// get copied to dist/ so a release folder is always one click away.
+project.ext.distDirectory = layout.buildDirectory.dir("dist")
+
+repositories {
+    maven { url 'https://maven.fabricmc.net/' }
+    maven { url 'https://server.bbcrew.world/' }
+}
+
+dependencies {
+    // Minecraft
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Fabric API
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // Mod menu (for the config screen)
+    modImplementation "com.terraformersmc:modmenu:13.0.0-beta.1"
+
+    // Cloth Config for nicer settings screens
+    modImplementation "me.shedaniel.cloth:cloth-config-fabric:16.0.141" apply false
+}
+
+processResources {
+    inputs.property "version", project.version
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+    it.options.encoding = "UTF-8"
+    it.options.compileArgs.addAll(["-Xlint:-options", "-Xlint:-deprecation", "-Xlint:-unchecked"])
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
+    archiveFileName = "${project.archivesBaseName}-${project.version}.jar"
+}
+
+// Publish to dist/ alongside build/libs/.
+tasks.register('copyArtifactsToDist', Copy) {
+    from jar
+    into project.ext.distDirectory
+    doLast {
+        logger.lifecycle("[Zenyx] Artefacts copied to ${project.ext.distDirectory.get().asFile}")
+    }
+}
+
+tasks.named('build').configure {
+    finalizedBy tasks.named('copyArtifactsToDist')
+}
+
+// Configure the maven publication (used by `gradle publish` to publish to Maven)
+publishing {
+    publications {
+        register("mavenJava", MavenPublication) {
+            from project.components.java
+            artifactId = project.archives_base_name
+        }
+    }
+
+    repositories {
+        // Add a maven repository for publishing built artifacts. Replace YOUR_USERNAME with your own:
+        // maven { url = "https://maven.example.com/releases" }
+    }
+}

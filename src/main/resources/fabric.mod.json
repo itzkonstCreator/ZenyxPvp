@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "zenyx_pvp",
+  "version": "${version}",
+  "name": "Zenyx PvP",
+  "description": "Lightweight Fabric 1.21.4 PvP client with HUD, ESP and movement modules.",
+  "authors": [
+    "itzkonst"
+  ],
+  "contact": {
+    "homepage": "https://github.com/itzkonstCreator/ZenyxPvp",
+    "issues": "https://github.com/itzkonstCreator/ZenyxPvp/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/zenyx_pvp/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "ru.zenyx.pvp.ZenyxPvp"
+    ]
+  },
+  "mixins": [
+    "zenyx_pvp.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.4",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": "*",
+    "cloth-config": "*"
+  }
+}
